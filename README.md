@@ -4,7 +4,7 @@ This project acts as a proxy between the [Pythagora GPT Pilot](https://github.co
 
 ## Model Compatibility
 
-The [DeepSeek-Coder instruct model](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct) has been fine-tuned to be compatible with the GPT Pilot application. The fine-tuned model can be found at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora).
+The [DeepSeek-Coder instruct model](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct) has been fine-tuned to be compatible with the GPT Pilot application. The fine-tuned model can be found at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-gguf).
 
 ## Setup Instructions
 
