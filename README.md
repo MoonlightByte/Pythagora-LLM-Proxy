@@ -32,7 +32,12 @@ The [DeepSeek-Coder instruct model](https://huggingface.co/deepseek-ai/deepseek-
    mitmdump -s conductor_proxy.py -p 8080
    ```
 
-5. Configure GPT Pilot to use the proxy by setting the OpenAI API endpoint to `http://localhost:8080/v1/chat/completions`.
+5. Configure GPT Pilot to use the proxy by setting the OpenAI API endpoint to `http://localhost:8080/v1/chat/completions`. For example, comment out your OpenAI API values and append your Pythagora .env files as follows:
+   ```
+   #Deepseek-Coder
+   OPENAI_ENDPOINT=http://localhost:8080/v1/chat/completions
+   OPENAI_API_KEY=:"not-needed"
+   ```
 
 ## Usage
 
