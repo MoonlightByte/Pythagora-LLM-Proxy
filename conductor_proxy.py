@@ -211,7 +211,13 @@ def response(flow: http.HTTPFlow) -> None:
                             if '"plan": []' not in content and '```json\\n{\\n "tasks": []' not in content:
                                 modified_stream.append(line)
             
-            if '"plan": []' in response_text or '```json\\n{\\n "tasks": []' in response_text:
+            # Check if the response text is a substring of any of the content messages
+            if len(response_text.split()) >= 10 and any(response_text.lower() in msg.lower() for msg in content_messages):
+                # Requery for a new response; this code prevents the model from repeating questions
+                modified_data = modify_request_data(flow.request.text)
+                response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=json.loads(modified_data))
+                flow.response.text = response.text
+            elif '"plan": []' in response_text or '```json\\n{\\n "tasks": []' in response_text:
                 # Requery for a new response; this code handles rare situations when the LLM fails to provide content in the response
                 modified_data = modify_request_data(flow.request.text)
                 response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=json.loads(modified_data))
