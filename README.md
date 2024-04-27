@@ -6,6 +6,18 @@ This project acts as a proxy between the [Pythagora GPT Pilot](https://github.co
 
 The [DeepSeek-Coder instruct model](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct) has been fine-tuned to be compatible with the GPT Pilot application. The fine-tuned model can be found at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-gguf).
 
+## Known Issues & Error Handling
+
+These 6.7b models work best when used with the accompanying proxy script from GitHub: [Pythagora-LLM-Proxy](https://github.com/MoonlightByte/Pythagora-LLM-Proxy). I recommend you check there and use the latest model to ensure proper error handling and formatting.
+
+Here's current list of error handling to address known issues:
+
+1. **Re-query missing plans**: Occasionally, the model may not produce a plan and instead pass `"plan": []` which causes Pythagora to report 100% complete.
+
+2. **Re-query missing tasks**: Under certain circumstances, the model may not generate tasks when necessary and instead pass `"tasks": []` which may cause issues with application development.
+
+3. **Re-query repetitive questions**: During the initial planning stage, when the project description is short, the model may repeat the same questions and get stuck in a loop.
+
 ## Setup Instructions
 
 1. Clone the repository:
