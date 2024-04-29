@@ -212,7 +212,7 @@ def response(flow: http.HTTPFlow) -> None:
                                 modified_stream.append(line)
             
             # Check if the response text is a substring of any of the content messages
-            if len(response_text.split()) >= 10 and any(response_text.lower() in msg.lower() for msg in content_messages):
+            if len(response_text.split()) >= 5 and any(response_text.lower() in msg.lower() for msg in content_messages):
                 # Requery for a new response; this code prevents the model from repeating questions
                 modified_data = modify_request_data(flow.request.text)
                 response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=json.loads(modified_data))
