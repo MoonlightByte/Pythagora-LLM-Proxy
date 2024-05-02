@@ -12,6 +12,8 @@ These 6.7b and 33b models work best when used with the accompanying proxy script
 
 <u><b>Please use version 2 of the 6.7b model now available at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf)</b></u>
 
+<u><b>Version 2 of the 33b model is currently in training and will be ready soon after testing.</b></u>
+
 Here's current list of error handling to address known issues with version 1:
 
 1. **Re-query missing plans**: Occasionally, the model may not produce a plan and instead pass `"plan": []` which causes Pythagora to report 100% complete.
