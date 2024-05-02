@@ -193,8 +193,8 @@ def response(flow: http.HTTPFlow) -> None:
         # Join the content messages to construct a single instruction string
         instruction = ' '.join(content_messages)
         
-        # Initialize an empty list to store the modified SSE stream
-        modified_stream = []
+        # Store the original request data
+        original_request_data = json.loads(flow.request.text)
         
         while True:
             # Parse the SSE output and extract the content
@@ -207,26 +207,24 @@ def response(flow: http.HTTPFlow) -> None:
                         if "delta" in chunk["choices"][0] and "content" in chunk["choices"][0]["delta"]:
                             content = chunk["choices"][0]["delta"]["content"]
                             response_text += content
-                            
-                            if '"plan": []' not in content and '```json\\n{\\n "tasks": []' not in content:
-                                modified_stream.append(line)
             
             # Check if the response text is a substring of any of the content messages
             if len(response_text.split()) >= 5 and any(response_text.lower() in msg.lower() for msg in content_messages):
-                # Requery for a new response; this code prevents the model from repeating questions
-                modified_data = modify_request_data(flow.request.text)
-                response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=json.loads(modified_data))
+                # Add the additional sentence to the beginning of the instruction
+                instruction = "You've asked enough questions, proceed with creating the **Application Specification:** " + instruction
+                
+                # Update the original request data with the modified instruction
+                original_request_data['messages'][0]['content'] = instruction
+                
+                # Requery for a new response using the modified request data
+                response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=original_request_data)
                 flow.response.text = response.text
             elif '"plan": []' in response_text or '```json\\n{\\n "tasks": []' in response_text:
-                # Requery for a new response; this code handles rare situations when the LLM fails to provide content in the response
-                modified_data = modify_request_data(flow.request.text)
-                response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=json.loads(modified_data))
+                # Requery for a new response using the original request data
+                response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=original_request_data)
                 flow.response.text = response.text
             else:
                 break
-        
-        # Update the flow response with the modified SSE stream
-        flow.response.text = "\n".join(modified_stream)
         
         # Calculate the token count
         token_count = 0
@@ -234,6 +232,7 @@ def response(flow: http.HTTPFlow) -> None:
             content = message['content']
             token_count += len(encoding.encode(content))
         
+        # Write input and output to JSON file
         write_to_json(instruction, response_text, token_count, "Local LLM", MIDDLE_MAN_JSON)
         
         # Log the SSE output
