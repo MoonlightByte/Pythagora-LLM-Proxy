@@ -6,6 +6,13 @@ This project acts as a proxy between the [Pythagora GPT Pilot](https://github.co
 
 Both [DeepSeek-Coder instruct 6.7b model](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct) and [DeepSeek-Coder instruct 33b model](https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct) have been fine-tuned for compatibility with the GPT Pilot application. The fine-tuned models can be found at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf) and [LoupGarou/deepseek-coder-33b-instruct-pythagora-gguf](https://huggingface.co/LoupGarou/deepseek-coder-33b-instruct-pythagora-gguf).
 
+**Version 2:** [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf), is compatible with the following versions:
+
+[GPT-Pilot (commit: af3c83007bd64dc5a3a210bf14ad65871abcc7ab)](https://github.com/Pythagora-io/gpt-pilot/tree/af3c83007bd64dc5a3a210bf14ad65871abcc7ab) and 
+[LM Studio (version: 0.2.21)](https://releases.lmstudio.ai/windows/0.2.21/c/latest/LM-Studio-0.2.21-Setup.exe)
+
+Please ensure you are using one of the above versions when working with this model to ensure proper functionality and compatibility.
+
 ## Known Issues & Error Handling
 
 These 6.7b and 33b models work best when used with the accompanying proxy script from GitHub: [Pythagora-LLM-Proxy](https://github.com/MoonlightByte/Pythagora-LLM-Proxy). I recommend you use the latest Pythagora LLM Proxy to ensure proper error handling and formatting.
