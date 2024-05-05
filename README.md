@@ -2,6 +2,8 @@
 
 This project acts as a proxy between the [Pythagora GPT Pilot](https://github.com/Pythagora-io/gpt-pilot) and a local host, such as [LM Studio](https://lmstudio.ai), allowing GPT Pilot to utilize Large Language Models (LLMs) without needing to use the [OpenAI API](https://openai.com/). The code formats the OpenAI API prompt into an instruction and output prompt compatible with the [DeepSeek-Coder instruct code base](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct).
 
+Note: GPT Pilot will often generate instructions exceeding 10,000 tokens and occassionally exceeding 16,000 tokens which exceeds the capabilities of most LLMs. Therefore, consider this proxy as a way to offload work from OpenAI API to you local services and reduce the cost of development.
+
 ## Model Compatibility
 
 Both [DeepSeek-Coder instruct 6.7b model](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct) and [DeepSeek-Coder instruct 33b model](https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct) have been fine-tuned for compatibility with the GPT Pilot application. The fine-tuned models can be found at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf) and [LoupGarou/deepseek-coder-33b-instruct-pythagora-gguf](https://huggingface.co/LoupGarou/deepseek-coder-33b-instruct-pythagora-gguf).
@@ -12,6 +14,18 @@ Both [DeepSeek-Coder instruct 6.7b model](https://huggingface.co/deepseek-ai/dee
 [LM Studio (version: 0.2.21)](https://releases.lmstudio.ai/windows/0.2.21/c/latest/LM-Studio-0.2.21-Setup.exe)
 
 Please ensure you are using one of the above versions when working with this model to ensure proper functionality and compatibility.
+
+## Optimal LLM Settings
+
+To reduce empty plan, tasks, and circular questions, you must ensure three primary conditions are met:
+
+1. **Prompt eval batch size (n_batch)**: Impacts how the instruction is divided and sent to the LLM. To prevent empty tasks, plans, and circular questions, set this to match your Context Length (n_ctx). For example, if your **n_ctx = 8192** then set your prompt eval bacth size to match **n_batch = 8192**. Warning: If the n_batch < n_ctx then your model will give bad results.
+
+2. **Context Length (n_ctx)**: Sets the maximum length of the instruction and truncates the instruction once the limit is exceeded. Set this value to the maximum your hardware can handle and the maximum for the model. For example, DeepSeek Coder has a maximum token length of 16,384. Warning: GPT Pilot will often create instructions prompts 10,000 to 20,000 tokens in length which is why Pythagora-LLM-Proxy was created to permit toggling to higher capacity APIs such as OpenAI.
+
+3. **MAX_TOKENS (GPT Pilot .env)**: Sets the maximum tokens the OpenAI API generate in the output. Setting this value too low will result in truncated messages.
+
+
 
 ## Known Issues & Error Handling
 
