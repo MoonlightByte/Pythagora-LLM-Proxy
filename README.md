@@ -28,7 +28,7 @@ To reduce empty plan, tasks, and circular questions, you must ensure three prima
 
 These 6.7b and 33b models work best when used with the accompanying proxy script from GitHub: [Pythagora-LLM-Proxy](https://github.com/MoonlightByte/Pythagora-LLM-Proxy). I recommend you use the latest Pythagora LLM Proxy to ensure proper error handling and formatting.
 
-<u><b>Please use version 2 of the 6.7b model now available at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v2-gguf)</b></u>
+<u><b>Please use version 2 of the 6.7b model now available at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf)</b></u>
 
 <u><b>Version 2 of the 33b model is currently in training and will be ready soon after testing.</b></u>
 
