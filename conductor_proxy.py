@@ -73,13 +73,16 @@ def request(flow: http.HTTPFlow) -> None:
         messages = request_data['messages']
 
         # Modifier to apply to the token count (just a lazy fudge factor to guestimate DeepSeek-Coder tokens) 
-        modifier = 1.10
+        modifier = 1.35
 
         # Calculate the token count
         token_count = 0
         for message in messages:
             content = message['content']
             token_count += len(encoding.encode(content))
+
+        # Add 59 tokens for the system prompt
+        token_count += 59
 
         # Apply the modifier to the token count
         token_count = int(token_count * modifier)
@@ -137,19 +140,8 @@ def request(flow: http.HTTPFlow) -> None:
         else:
             # Modify the request data
             modified_data = modify_request_data(flow.request.text)
-            modified_data = json.loads(modified_data)
 
-            # Modify the "messages" field in the modified request data
-            # This portion of the code matches the format of DeepSeek-Coder instruct models and enables use with llama.cpp, etc, without needing to send OpenAI prompt format
-            modified_messages = [
-                {
-                    "role": "user",
-                    "content": instruction
-                }
-            ]
-            modified_data['messages'] = modified_messages
-
-            flow.request.text = json.dumps(modified_data)
+            flow.request.text = modified_data
             flow.request.host = LOCAL_LLM_HOST
             flow.request.port = LOCAL_LLM_PORT
 
@@ -208,29 +200,16 @@ def response(flow: http.HTTPFlow) -> None:
                             content = chunk["choices"][0]["delta"]["content"]
                             response_text += content
             
-            # Check if the response text is a substring of any of the content messages
-            if len(response_text.split()) >= 5 and any(response_text.lower() in msg.lower() for msg in content_messages):
-                # Add the additional sentence to the beginning of the instruction
-                instruction = "You've asked enough questions, proceed with creating the **Application Specification:** " + instruction
-                
-                # Update the original request data with the modified instruction
-                original_request_data['messages'][0]['content'] = instruction
-                
-                # Requery for a new response using the modified request data
-                response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=original_request_data)
-                flow.response.text = response.text
-            elif '"plan": []' in response_text or '```json\\n{\\n "tasks": []' in response_text:
-                # Requery for a new response using the original request data
-                response = requests.post(f"http://{LOCAL_LLM_HOST}:{LOCAL_LLM_PORT}/v1/chat/completions", json=original_request_data)
-                flow.response.text = response.text
-            else:
-                break
+            break
         
         # Calculate the token count
         token_count = 0
         for message in messages:
             content = message['content']
             token_count += len(encoding.encode(content))
+
+        # Add 59 tokens for the system prompt
+        token_count += 59
         
         # Write input and output to JSON file
         write_to_json(instruction, response_text, token_count, "Local LLM", MIDDLE_MAN_JSON)
