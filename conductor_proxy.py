@@ -72,17 +72,20 @@ def request(flow: http.HTTPFlow) -> None:
         request_data = json.loads(flow.request.text)
         messages = request_data['messages']
 
-        # Modifier to apply to the token count (just a lazy fudge factor to guestimate DeepSeek-Coder tokens) 
+        # Modifier to apply to the token count (just a lazy fudge factor to guestimate DeepSeek-Coder tokens)
         modifier = 1.35
 
         # Calculate the token count
         token_count = 0
         for message in messages:
+            role = message['role']
             content = message['content']
+            token_count += len(encoding.encode(role))
             token_count += len(encoding.encode(content))
 
-        # Add 59 tokens for the system prompt
-        token_count += 59
+        # Add the token count for the system prompt
+        system_prompt = "Your system prompt goes here"
+        token_count += len(encoding.encode(system_prompt))
 
         # Apply the modifier to the token count
         token_count = int(token_count * modifier)
@@ -179,6 +182,7 @@ def response(flow: http.HTTPFlow) -> None:
         
         # Collect content for JSON writing
         for message in messages:
+            role = message['role']
             content = message['content']
             content_messages.append(content)
         
@@ -205,11 +209,17 @@ def response(flow: http.HTTPFlow) -> None:
         # Calculate the token count
         token_count = 0
         for message in messages:
+            role = message['role']
             content = message['content']
+            token_count += len(encoding.encode(role))
             token_count += len(encoding.encode(content))
 
-        # Add 59 tokens for the system prompt
-        token_count += 59
+        # Add system prompt to token count
+        system_prompt = "You are an AI programming assistant, utilizing the DeepSeek Coder model, developed by DeepSeek Company, and you only answer questions related to computer science. For politically sensitive questions, security and privacy issues, and other non-computer science questions, you will refuse to answer."
+        token_count += len(encoding.encode(system_prompt))
+        
+        # Apply the modifier to the token count
+        token_count = int(token_count * 1.35)
         
         # Write input and output to JSON file
         write_to_json(instruction, response_text, token_count, "Local LLM", MIDDLE_MAN_JSON)
