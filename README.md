@@ -1,12 +1,14 @@
 # Pythagora LLM Proxy
 
-This project acts as a proxy between the [Pythagora GPT Pilot](https://github.com/Pythagora-io/gpt-pilot) and a local host, such as [LM Studio](https://lmstudio.ai), allowing GPT Pilot to utilize Large Language Models (LLMs) without needing to use the [OpenAI API](https://openai.com/). The code formats the OpenAI API prompt into an instruction and output prompt compatible with the [DeepSeek-Coder instruct code base](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct).
+This project acts as a proxy between the [Pythagora GPT Pilot](https://github.com/Pythagora-io/gpt-pilot) and a local host, such as [LM Studio](https://lmstudio.ai), allowing GPT Pilot to utilize Large Language Models (LLMs) without needing to use the [OpenAI API](https://openai.com/).
 
-Note: GPT Pilot will often generate instructions exceeding 10,000 tokens and occassionally exceeding 16,000 tokens which exceeds the capabilities of most LLMs. Therefore, consider this proxy as a way to offload work from OpenAI API to you local services and reduce the cost of development.
+Because GPT Pilot prompting will often exceed the limitations of most LLMs by generating instructions exceeding 10,000 tokens, and occassionally exceeding 16,000 tokens, this proxy provides a method to offload work from OpenAI API to you local services and reduce the cost of development.
+
+The proxy also provides instruction and output logging for debugging purposes and future finetuning to improve performance on specific tasks.
 
 ## Model Compatibility
 
-Both [DeepSeek-Coder instruct 6.7b model](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct) and [DeepSeek-Coder instruct 33b model](https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct) have been fine-tuned for compatibility with the GPT Pilot application. The fine-tuned models can be found at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf) and [LoupGarou/deepseek-coder-33b-instruct-pythagora-gguf](https://huggingface.co/LoupGarou/deepseek-coder-33b-instruct-pythagora-gguf).
+Both [DeepSeek-Coder instruct 6.7b model](https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-instruct) and [DeepSeek-Coder instruct 33b model](https://huggingface.co/deepseek-ai/deepseek-coder-33b-instruct) have been fine-tuned for compatibility with GPT Pilot. The most current fine-tuned models can be found at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf) and [LoupGarou/deepseek-coder-33b-instruct-pythagora-gguf](https://huggingface.co/LoupGarou/deepseek-coder-33b-instruct-pythagora-gguf).
 
 **Version 3:** [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf), is tested to be compatible with the following versions:
 
@@ -19,7 +21,7 @@ Please ensure you are using one of the above versions when working with this mod
 
 To reduce empty plan, tasks, and circular questions, you must ensure three primary conditions are met:
 
-1. **Prompt eval batch size (n_batch)**: LM Studio - Impacts how the instruction is divided and sent to the LLM. To prevent empty tasks, plans, and circular questions, set this to match your Context Length (n_ctx). For example, if your **n_ctx = 8192** then set your prompt eval bacth size to match **n_batch = 8192**. Warning: If the n_batch < n_ctx then your model will give bad results.
+1. **Prompt eval batch size (n_batch)**: LM Studio - Impacts how the instruction is divided and sent to the LLM. To prevent empty tasks, plans, and circular questions, set this as high as possible and match your Context Length (n_ctx) if possible. For example, if your **n_ctx = 8192** then set your prompt eval bacth size to match **n_batch = 8192**. Warning: If the n_batch < n_ctx then your model may give bad results depending on the version of LM Studio you are using.
 2. **Context Length (n_ctx)**: LM Studio - Sets the maximum length of the instruction and truncates the instruction once the limit is exceeded. Set this value to the maximum your hardware can handle and the maximum for the model. For example, DeepSeek Coder has a maximum token length of 16,384. Warning: GPT Pilot will often create instruction prompts 10,000 to 20,000 tokens in length which is why Pythagora-LLM-Proxy was created to permit toggling to higher capacity APIs such as OpenAI.
 3. **System Prompt**: LM Studio - System Prompt must be set to DeepSeek Coder prompt: "You are an AI programming assistant, utilizing the DeepSeek Coder model, developed by DeepSeek Company, and you only answer questions related to computer science. For politically sensitive questions, security and privacy issues, and other non-computer science questions, you will refuse to answer."
 4. **MAX_TOKENS (GPT Pilot .env)**: GPT Pilot - Sets the maximum tokens the OpenAI API generate in the output. Warning: Setting this value too low will result in truncated messages.
@@ -28,17 +30,11 @@ To reduce empty plan, tasks, and circular questions, you must ensure three prima
 
 These 6.7b and 33b models work best when used with the accompanying proxy script from GitHub: [Pythagora-LLM-Proxy](https://github.com/MoonlightByte/Pythagora-LLM-Proxy). I recommend you use the latest Pythagora LLM Proxy to ensure proper error handling and formatting.
 
-<u><b>Please use version 2 of the 6.7b model now available at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf)</b></u>
+<u><b>Please use version 3 of the 6.7b model now available at [LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf](https://huggingface.co/LoupGarou/deepseek-coder-6.7b-instruct-pythagora-v3-gguf)</b></u>
 
-<u><b>Version 2 of the 33b model is currently in training and will be ready soon after testing.</b></u>
+<u><b>Version 3 of the 33b model is currently in training and will be ready soon after testing.</b></u>
 
-Here's current list of error handling to address known issues with version 1:
-
-1. **Re-query missing plans**: Occasionally, the model may not produce a plan and instead pass `"plan": []` which causes Pythagora to report 100% complete.
-
-2. **Re-query missing tasks**: Under certain circumstances, the model may not generate tasks when necessary and instead pass `"tasks": []` which may cause issues with application development.
-
-3. **Re-query repetitive questions**: During the initial planning stage, when the project description is short, the model may repeat the same questions and get stuck in a loop.
+Note: The previous error handling has been removed as it's no longer necessary with version 3 of the models due to increased prompt training in the areas of weakness.
 
 ## Setup Instructions
 
@@ -75,7 +71,7 @@ Here's current list of error handling to address known issues with version 1:
 
 ## Usage
 
-The proxy will intercept the API requests from GPT Pilot and format them into an instruction and output prompt compatible with the DeepSeek-Coder instruct model. If the token count exceeds the specified `MAX_TOKEN_COUNT`, the request will be sent to the OpenAI API instead. This is useful in circumstances where the token count needed by Pythagora exceeds the capabilities of the local model.
+The proxy will intercept the API requests from GPT Pilot and logs the instructions, output, approximate token count, and model used. The proxy no longer modifies the content passed to the LM Studio other than the OpenAI API template parameters for temperature, top_p, etc. If the token count exceeds the specified `MAX_TOKEN_COUNT`, the request will be sent to the OpenAI API instead. This is useful in circumstances where the token count needed by Pythagora exceeds the capabilities of the local model.
 
 The conversation history and output logs will be stored in the specified files (`MIDDLE_MAN_JSON`, `OUTPUT_LOG`, `OPENAI_OUTPUT_LOG`).
 
