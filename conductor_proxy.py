@@ -54,7 +54,7 @@ def write_to_json(instruction, output, token_count, client, filename):
         json.dump(data, file, indent=4, ensure_ascii=False)
 
 # Specify which model parameters to override for the local host
-# These default settings work well with the "LoupGarou/deepseek-coder-6.7b-instruct-pythagora" model version 1
+# These default settings work well with the "LoupGarou/deepseek-coder-6.7b-instruct-pythagora" model version 3
 def modify_request_data(data):
     request_data = json.loads(data)
     request_data['model'] = "gpt-4-turbo-preview"
