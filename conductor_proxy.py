@@ -30,12 +30,12 @@ encoding = get_encoding("cl100k_base")
 
 def process_request(request_data):
     messages = request_data['messages']
-    response = openai.ChatCompletion.create(
+    completion = client.chat.completions.create(
         model="gpt-4-0125-preview",
         temperature=0.7,
         messages=messages,
     )
-    response_text = response['choices'][0]['message']['content'].strip()
+    response_text = completion.choices[0].message.content.strip()
     return response_text
 
 def write_to_json(instruction, output, token_count, client, filename):
